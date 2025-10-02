@@ -9,8 +9,8 @@ const PantallaOperador = () => {
 
   useEffect(() => {
     cargarTurnos()
-    // Actualizar cada 10 segundos
-    const interval = setInterval(cargarTurnos, 10000)
+    // Actualizar cada 20 segundos (reducido de 10)
+    const interval = setInterval(cargarTurnos, 20000)
     return () => clearInterval(interval)
   }, [])
 

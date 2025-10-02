@@ -37,11 +37,13 @@ export const obtenerTurnos = async () => {
                     [Op.lt]: mañana
                 }
             },
-            order: [['numero_turno', 'ASC']]
+            order: [['numero_turno', 'ASC']],
+            // Limitar a 20 turnos para optimizar
+            limit: 20
         });
 
         if (!turnos || turnos.length === 0) {
-            return { message: "No hay turnos para hoy" };
+            return [];
         }
 
         return turnos;
@@ -102,6 +104,31 @@ export const llamarSiguienteTurno = async () => {
         return proximoTurno;
     } catch (error) {
         console.error("Error al llamar el siguiente turno:", error);
+        throw error;
+    }
+};
+
+// Nuevo endpoint para verificar cambios
+export const verificarCambios = async (ultimaActualizacion) => {
+    try {
+        const fechaLimite = new Date(ultimaActualizacion);
+        
+        const turnosModificados = await Turnos.findAll({
+            where: {
+                updatedAt: {
+                    [Op.gt]: fechaLimite
+                }
+            },
+            order: [['updatedAt', 'DESC']],
+            limit: 5
+        });
+
+        return {
+            haycambios: turnosModificados.length > 0,
+            turnos: turnosModificados
+        };
+    } catch (error) {
+        console.error("Error al verificar cambios:", error);
         throw error;
     }
 };

@@ -4,6 +4,7 @@ import {
     eliminarTurno,
     obtenerTurnos,
     llamarSiguienteTurno,
+    verificarCambios,
 } from '../services/turnos.service.js';
 
 
@@ -71,5 +72,19 @@ export const llamarSiguiente = async (req, res) => {
         res.status(200).json(resultado);
     } catch (error) {
         res.status(500).json({ message: "Error al llamar el siguiente turno" });
+    }
+};
+
+export const checkCambios = async (req, res) => {
+    try {
+        const { desde } = req.query;
+        if (!desde) {
+            return res.status(400).json({ message: "Parámetro 'desde' requerido" });
+        }
+        
+        const resultado = await verificarCambios(desde);
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ message: "Error al verificar cambios" });
     }
 };

@@ -5,11 +5,13 @@ import {
     postTurnos,
     putTurnos,
     llamarSiguiente,
+    checkCambios,
 } from "../controllers/turnos.controller.js";
 
 const TurnosRouter = Router();
 
 TurnosRouter.get("/", getTurnos);
+TurnosRouter.get("/cambios", checkCambios);
 TurnosRouter.post("/", postTurnos);
 TurnosRouter.put("/:id", putTurnos);
 TurnosRouter.delete("/:id", deleteTurnos);
