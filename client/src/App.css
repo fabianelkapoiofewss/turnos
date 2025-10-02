@@ -552,27 +552,7 @@ body {
   flex-direction: column;
   gap: 15px;
   height: 100%;
-  overflow-y: auto;
   padding-right: 5px;
-}
-
-/* Scrollbar para la lista de turnos */
-.lista-turnos-nueva::-webkit-scrollbar {
-  width: 8px;
-}
-
-.lista-turnos-nueva::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.lista-turnos-nueva::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.lista-turnos-nueva::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
 }
 
 .tarjeta-turno {

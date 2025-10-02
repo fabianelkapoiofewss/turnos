@@ -378,7 +378,8 @@ const PantallaTurnos = () => {
     return estados[estado] || estado
   }
 
-  const turnosMostrar = turnos.slice(0, 8)
+  // Filtrar turnos que no estén atendidos y mostrar máximo 8
+  const turnosMostrar = turnos.filter(turno => turno.estado !== 'atendido').slice(0, 8)
 
   return (
     <div className="pantalla-turnos-nueva">
@@ -400,9 +401,6 @@ const PantallaTurnos = () => {
                 >
                   <div className="nombre-usuario">
                     {turno.nombre.toUpperCase()}
-                  </div>
-                  <div className="numero-turno-pequeño">
-                    #{turno.numero_turno}
                   </div>
                   {turno.estado === 'llamado' && (
                     <div className="indicador-llamado">LLAMANDO</div>
@@ -439,8 +437,29 @@ const PantallaTurnos = () => {
           {formatearFecha(fechaHora)} - {formatearHora(fechaHora)}
         </div>
         <div className="controles-mini">
-          <button onClick={probarAudio} className="btn-mini">🔊</button>
-          <button onClick={() => setMostrarSelector(!mostrarSelector)} className="btn-mini">⚙️</button>
+          <img 
+            src="/src/assets/arielcaniza.png" 
+            alt="Ariel Caniza" 
+            className="imagen-institucional"
+            style={{
+              height: '90px',
+              width: 'auto',
+              objectFit: 'contain',
+              marginRight: '15px',
+              borderRadius: '5px'
+            }}
+          />
+          <img 
+            src="/src/assets/municipalidaddeclorinda.png" 
+            alt="Municipalidad de Clorinda" 
+            className="imagen-institucional"
+            style={{
+              height: '90px',
+              width: 'auto',
+              objectFit: 'contain',
+              borderRadius: '5px'
+            }}
+          />
         </div>
         
         {/* Selector de voces (oculto por defecto) */}
@@ -472,7 +491,7 @@ const PantallaTurnos = () => {
       {turnoLlamado && (
         <div className="modal-llamado">
           <div className="modal-content">
-            <h2>TURNO #{turnoLlamado.numero_turno}</h2>
+            <h2>SIGUIENTE</h2>
             <p>{turnoLlamado.nombre}</p>
             <p>Por favor acérquese</p>
           </div>

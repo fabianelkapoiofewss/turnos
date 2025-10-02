@@ -147,7 +147,6 @@ const PantallaOperador = () => {
             <table className="tabla-turnos">
               <thead>
                 <tr>
-                  <th>#</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Hora Creación</th>
@@ -158,7 +157,6 @@ const PantallaOperador = () => {
               <tbody>
                 {turnos.map((turno) => (
                   <tr key={turno.id} className={`turno-row ${turno.estado}`}>
-                    <td className="numero-turno">#{turno.numero_turno}</td>
                     <td>{turno.nombre}</td>
                     <td>
                       <span className={`badge ${turno.estado}`}>
