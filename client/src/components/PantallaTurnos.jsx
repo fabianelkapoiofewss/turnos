@@ -438,7 +438,7 @@ const PantallaTurnos = () => {
         </div>
         <div className="controles-mini">
           <img 
-            src="/src/assets/arielcaniza.png" 
+            src="/arielcaniza.png" 
             alt="Ariel Caniza" 
             className="imagen-institucional"
             style={{
@@ -450,7 +450,7 @@ const PantallaTurnos = () => {
             }}
           />
           <img 
-            src="/src/assets/municipalidaddeclorinda.png" 
+            src="/municipalidaddeclorinda.png" 
             alt="Municipalidad de Clorinda" 
             className="imagen-institucional"
             style={{
