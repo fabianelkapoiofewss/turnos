@@ -1,0 +1,21 @@
+# Archivo de sonido necesario
+
+Coloca aquí tu archivo de audio personalizado con el nombre:
+**turno-pitido.mp3**
+
+El sistema intentará reproducir este archivo cuando se llame un turno.
+Si no existe o no puede reproducirse, usará un sonido sintético simple como fallback.
+
+## Sugerencias de sonidos:
+1. Busca "notification sound" o "ding sound" en internet
+2. Asegúrate de que sea corto (1-3 segundos)
+3. Que tenga buen volumen pero no sea estridente
+4. Formatos: MP3, WAV, OGG son los más compatibles
+
+## Sitios para descargar sonidos gratuitos:
+- Freesound.org
+- Zapsplat.com
+- Mixkit.co
+- YouTube Audio Library
+
+¡Una vez que agregues tu archivo, el sistema lo usará automáticamente!

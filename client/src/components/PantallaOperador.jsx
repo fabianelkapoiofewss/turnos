@@ -140,47 +140,6 @@ const PantallaOperador = () => {
       )}
 
       <div className="contenido-operador">
-        <div className="seccion">
-          <h2>Crear Nuevo Turno</h2>
-          <form onSubmit={crearTurno}>
-            <div className="form-grupo">
-              <label htmlFor="nombre">Nombre del Cliente:</label>
-              <input
-                type="text"
-                id="nombre"
-                value={nombreNuevo}
-                onChange={(e) => setNombreNuevo(e.target.value)}
-                placeholder="Ingrese el nombre"
-                disabled={loading}
-              />
-            </div>
-            <button 
-              type="submit" 
-              className="btn btn-primary"
-              disabled={loading || !nombreNuevo.trim()}
-            >
-              {loading ? 'Creando...' : 'Crear Turno'}
-            </button>
-          </form>
-
-          <div className="estadisticas">
-            <h3>Estadísticas</h3>
-            <div className="stats-grid">
-              <div className="stat-item">
-                <span className="stat-number">{turnosEspera.length}</span>
-                <span className="stat-label">En Espera</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">{turnosLlamados.length}</span>
-                <span className="stat-label">Llamados</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">{turnosAtendidos.length}</span>
-                <span className="stat-label">Atendidos</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div className="seccion">
           <h2>Lista de Turnos</h2>

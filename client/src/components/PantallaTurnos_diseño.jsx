@@ -11,80 +11,6 @@ const PantallaTurnos = () => {
   const [mostrarSelector, setMostrarSelector] = useState(false)
   const turnosAnteriorRef = useRef([])
 
-  // Función para reproducir sonido personalizado de turno
-  const reproducirPitidoTurno = (callback) => {
-    try {
-      // Crear elemento de audio para sonido personalizado
-      const audio = new Audio('/sonidos/turno-pitido.mp3') // Puedes cambiar la ruta y formato
-      
-      // Configurar volumen
-      audio.volume = 0.7 // 70% de volumen
-      
-      // Cuando termine el sonido, ejecutar callback
-      audio.onended = () => {
-        console.log('🔔 Sonido personalizado completado')
-        if (callback) callback()
-      }
-      
-      // Si hay error con el audio personalizado, usar fallback
-      audio.onerror = () => {
-        console.warn('⚠️ No se pudo cargar sonido personalizado, usando fallback')
-        reproducirPitidoFallback(callback)
-      }
-      
-      // Reproducir sonido personalizado
-      audio.play().then(() => {
-        console.log('🔔 Reproduciendo sonido personalizado de turno')
-      }).catch((error) => {
-        console.warn('⚠️ Error al reproducir sonido personalizado:', error)
-        reproducirPitidoFallback(callback)
-      })
-      
-    } catch (error) {
-      console.warn('⚠️ Error al crear audio personalizado:', error)
-      reproducirPitidoFallback(callback)
-    }
-  }
-
-  // Función de fallback con sonido sintético (por si falla el personalizado)
-  const reproducirPitidoFallback = (callback) => {
-    try {
-      // Crear contexto de audio
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-      
-      // Sonido simple de notificación
-      const oscilador = audioContext.createOscillator()
-      const ganancia = audioContext.createGain()
-      
-      // Configurar oscilador para un "ding" simple
-      oscilador.type = 'sine'
-      oscilador.frequency.setValueAtTime(800, audioContext.currentTime) // Frecuencia más alta
-      
-      // Configurar volumen con fade out rápido
-      ganancia.gain.setValueAtTime(0.4, audioContext.currentTime)
-      ganancia.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
-      
-      // Conectar cadena de audio
-      oscilador.connect(ganancia)
-      ganancia.connect(audioContext.destination)
-      
-      // Reproducir
-      oscilador.start(audioContext.currentTime)
-      oscilador.stop(audioContext.currentTime + 0.5)
-      
-      // Ejecutar callback después del sonido
-      setTimeout(() => {
-        console.log('🔔 Sonido fallback completado')
-        if (callback) callback()
-      }, 600)
-      
-    } catch (error) {
-      console.warn('⚠️ Error en sonido fallback:', error)
-      // Si todo falla, ejecutar callback inmediatamente
-      if (callback) callback()
-    }
-  }
-
   // Cargar voces y configurar voz preferida con localStorage
   useEffect(() => {
     const cargarVoces = () => {
@@ -185,117 +111,24 @@ const PantallaTurnos = () => {
   const mostrarTurnoLlamado = (turno) => {
     setTurnoLlamado(turno)
     
-    // Reproducir sonido de pitido ANTES del text-to-speech
-    reproducirPitidoTurno(() => {
-      // Text to Speech con voz GARANTIZADA (se ejecuta después del pitido)
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel()
-        
-        setTimeout(() => {
-          const mensaje = `Para carnet. ${turno.nombre}. Por favor acérquese.`
-          const utterance = new SpeechSynthesisUtterance(mensaje)
-          
-          // ESTRATEGIA ROBUSTA: Múltiples intentos para encontrar la voz
-          const vocesActuales = speechSynthesis.getVoices()
-          let vozElegida = null
-          
-          // 1. Intentar con la voz seleccionada
-          if (vozSeleccionada && vozSeleccionada.trim() !== '') {
-            vozElegida = vocesActuales.find(voz => voz.name === vozSeleccionada)
-            if (vozElegida) {
-              console.log(`🎙️ USANDO VOZ SELECCIONADA: ${vozElegida.name} (${vozElegida.lang})`)
-            }
-          }
-          
-          // 2. Si no funciona, buscar desde localStorage
-          if (!vozElegida) {
-            const vozGuardada = localStorage.getItem('turnos-voz-preferida')
-            if (vozGuardada) {
-              vozElegida = vocesActuales.find(voz => voz.name === vozGuardada)
-              if (vozElegida) {
-                console.log(`🎙️ USANDO VOZ DESDE LOCALSTORAGE: ${vozElegida.name} (${vozElegida.lang})`)
-                setVozSeleccionada(vozGuardada) // Sincronizar estado
-              }
-            }
-          }
-          
-          // 3. Si aún no funciona, buscar Google español US
-          if (!vozElegida) {
-            vozElegida = vocesActuales.find(voz => 
-              voz.name === 'Google español de Estados Unidos' || 
-              (voz.name.toLowerCase().includes('google') && voz.lang === 'es-US')
-            )
-            if (vozElegida) {
-              console.log(`🎙️ USANDO VOZ POR DEFECTO: ${vozElegida.name} (${vozElegida.lang})`)
-              setVozSeleccionada(vozElegida.name)
-              localStorage.setItem('turnos-voz-preferida', vozElegida.name)
-            }
-          }
-          
-          // 4. Último recurso: cualquier voz en español
-          if (!vozElegida) {
-            vozElegida = vocesActuales.find(voz => voz.lang.includes('es'))
-            if (vozElegida) {
-              console.log(`🎙️ USANDO VOZ ESPAÑOL ALTERNATIVA: ${vozElegida.name} (${vozElegida.lang})`)
-            }
-          }
-          
-          // Aplicar la voz encontrada
-          if (vozElegida) {
-            utterance.voice = vozElegida
-          } else {
-            console.log(`⚠️ NO SE ENCONTRÓ NINGUNA VOZ VÁLIDA. Usando voz del sistema`)
-            console.log(`🔍 Estado actual: vozSeleccionada="${vozSeleccionada}", voces disponibles: ${vocesActuales.length}`)
-          }
-          
-          // Configuración optimizada - VELOCIDAD AUMENTADA
-          utterance.rate = 1.3    // Aumentado de 0.9 a 1.2 (más rápido)
-          utterance.pitch = 1.0   // Tono normal
-          utterance.volume = 1.0  // Volumen máximo
-          
-          // Eventos para verificar
-          utterance.onstart = () => {
-            console.log('🔊 ANUNCIO INICIADO CON:', utterance.voice ? `${utterance.voice.name} (${utterance.voice.lang})` : 'Voz del sistema')
-            console.log('📢 Mensaje:', mensaje)
-          }
-          
-          utterance.onend = () => {
-            console.log('✅ Anuncio completado exitosamente')
-          }
-          
-          utterance.onerror = (event) => {
-            console.error('❌ Error en text-to-speech:', event.error)
-          }
-          
-          speechSynthesis.speak(utterance)
-        }, 300)
-      } else {
-        console.warn('⚠️ Text-to-Speech no disponible')
-      }
-    })
-    
-    setTimeout(() => {
-      setTurnoLlamado(null)
-    }, 6000)
-  }
-
-  // Función para probar la voz seleccionada
-  const probarAudio = () => {
-    // Reproducir pitido ANTES del text-to-speech en la prueba también
-    reproducirPitidoTurno(() => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel()
-        
-        const mensaje = 'Prueba de audio. Sistema de turnos funcionando correctamente. por favor acérquese.'
+    // Text to Speech con voz GARANTIZADA
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel()
+      
+      setTimeout(() => {
+        const mensaje = `Turno número ${turno.numero_turno}. ${turno.nombre}. Por favor acérquese al mostrador.`
         const utterance = new SpeechSynthesisUtterance(mensaje)
         
-        // Usar la misma lógica robusta que en mostrarTurnoLlamado
+        // ESTRATEGIA ROBUSTA: Múltiples intentos para encontrar la voz
         const vocesActuales = speechSynthesis.getVoices()
         let vozElegida = null
         
         // 1. Intentar con la voz seleccionada
         if (vozSeleccionada && vozSeleccionada.trim() !== '') {
           vozElegida = vocesActuales.find(voz => voz.name === vozSeleccionada)
+          if (vozElegida) {
+            console.log(`🎙️ USANDO VOZ SELECCIONADA: ${vozElegida.name} (${vozElegida.lang})`)
+          }
         }
         
         // 2. Si no funciona, buscar desde localStorage
@@ -304,37 +137,124 @@ const PantallaTurnos = () => {
           if (vozGuardada) {
             vozElegida = vocesActuales.find(voz => voz.name === vozGuardada)
             if (vozElegida) {
+              console.log(`🎙️ USANDO VOZ DESDE LOCALSTORAGE: ${vozElegida.name} (${vozElegida.lang})`)
               setVozSeleccionada(vozGuardada) // Sincronizar estado
             }
           }
         }
         
-        // 3. Buscar Google español US por defecto
+        // 3. Si aún no funciona, buscar Google español US
         if (!vozElegida) {
           vozElegida = vocesActuales.find(voz => 
             voz.name === 'Google español de Estados Unidos' || 
             (voz.name.toLowerCase().includes('google') && voz.lang === 'es-US')
           )
+          if (vozElegida) {
+            console.log(`🎙️ USANDO VOZ POR DEFECTO: ${vozElegida.name} (${vozElegida.lang})`)
+            setVozSeleccionada(vozElegida.name)
+            localStorage.setItem('turnos-voz-preferida', vozElegida.name)
+          }
         }
         
+        // 4. Último recurso: cualquier voz en español
+        if (!vozElegida) {
+          vozElegida = vocesActuales.find(voz => voz.lang.includes('es'))
+          if (vozElegida) {
+            console.log(`🎙️ USANDO VOZ ESPAÑOL ALTERNATIVA: ${vozElegida.name} (${vozElegida.lang})`)
+          }
+        }
+        
+        // Aplicar la voz encontrada
         if (vozElegida) {
           utterance.voice = vozElegida
-          console.log(`🧪 PROBANDO VOZ: ${vozElegida.name} (${vozElegida.lang})`)
         } else {
-          console.log(`⚠️ No se pudo encontrar voz para prueba`)
+          console.log(`⚠️ NO SE ENCONTRÓ NINGUNA VOZ VÁLIDA. Usando voz del sistema`)
+          console.log(`🔍 Estado actual: vozSeleccionada="${vozSeleccionada}", voces disponibles: ${vocesActuales.length}`)
         }
         
-        utterance.rate = 1.3    // Velocidad aumentada - igual que en el anuncio real
+        // Configuración optimizada - VELOCIDAD AUMENTADA
+        utterance.rate = 1.2    // Aumentado de 0.9 a 1.2 (más rápido)
         utterance.pitch = 1.0   // Tono normal
         utterance.volume = 1.0  // Volumen máximo
         
-        utterance.onstart = () => console.log('🔊 Prueba iniciada con:', utterance.voice ? utterance.voice.name : 'Voz del sistema')
-        utterance.onend = () => console.log('✅ Prueba completada')
-        utterance.onerror = (event) => console.error('❌ Error en prueba:', event.error)
+        // Eventos para verificar
+        utterance.onstart = () => {
+          console.log('🔊 ANUNCIO INICIADO CON:', utterance.voice ? `${utterance.voice.name} (${utterance.voice.lang})` : 'Voz del sistema')
+          console.log('📢 Mensaje:', mensaje)
+        }
+        
+        utterance.onend = () => {
+          console.log('✅ Anuncio completado exitosamente')
+        }
+        
+        utterance.onerror = (event) => {
+          console.error('❌ Error en text-to-speech:', event.error)
+        }
         
         speechSynthesis.speak(utterance)
+      }, 300)
+    } else {
+      console.warn('⚠️ Text-to-Speech no disponible')
+    }
+    
+    setTimeout(() => {
+      setTurnoLlamado(null)
+    }, 6000)
+  }
+
+  // Función para probar la voz seleccionada
+  const probarAudio = () => {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel()
+      
+      const mensaje = 'Prueba de audio. Sistema de turnos funcionando correctamente. Turno número uno, Juan Pérez, por favor acérquese al mostrador.'
+      const utterance = new SpeechSynthesisUtterance(mensaje)
+      
+      // Usar la misma lógica robusta que en mostrarTurnoLlamado
+      const vocesActuales = speechSynthesis.getVoices()
+      let vozElegida = null
+      
+      // 1. Intentar con la voz seleccionada
+      if (vozSeleccionada && vozSeleccionada.trim() !== '') {
+        vozElegida = vocesActuales.find(voz => voz.name === vozSeleccionada)
       }
-    })
+      
+      // 2. Si no funciona, buscar desde localStorage
+      if (!vozElegida) {
+        const vozGuardada = localStorage.getItem('turnos-voz-preferida')
+        if (vozGuardada) {
+          vozElegida = vocesActuales.find(voz => voz.name === vozGuardada)
+          if (vozElegida) {
+            setVozSeleccionada(vozGuardada) // Sincronizar estado
+          }
+        }
+      }
+      
+      // 3. Buscar Google español US por defecto
+      if (!vozElegida) {
+        vozElegida = vocesActuales.find(voz => 
+          voz.name === 'Google español de Estados Unidos' || 
+          (voz.name.toLowerCase().includes('google') && voz.lang === 'es-US')
+        )
+      }
+      
+      if (vozElegida) {
+        utterance.voice = vozElegida
+        console.log(`🧪 PROBANDO VOZ: ${vozElegida.name} (${vozElegida.lang})`)
+      } else {
+        console.log(`⚠️ No se pudo encontrar voz para prueba`)
+      }
+      
+      utterance.rate = 1.2    // Velocidad aumentada - igual que en el anuncio real
+      utterance.pitch = 1.0   // Tono normal
+      utterance.volume = 1.0  // Volumen máximo
+      
+      utterance.onstart = () => console.log('🔊 Prueba iniciada con:', utterance.voice ? utterance.voice.name : 'Voz del sistema')
+      utterance.onend = () => console.log('✅ Prueba completada')
+      utterance.onerror = (event) => console.error('❌ Error en prueba:', event.error)
+      
+      speechSynthesis.speak(utterance)
+    }
   }
 
   // Función para cambiar voz y guardarla permanentemente
@@ -420,13 +340,15 @@ const PantallaTurnos = () => {
         {/* Panel derecho - Contenido multimedia */}
         <div className="panel-multimedia">
           <div className="contenedor-video">
-            {/* <div className="texto-video">
+            <div className="texto-video">
               VIDEO INSTITUCIONAL CARGADO DESDE UN SUPER ADMIN
-            </div> */}
+            </div>
             <div className="area-video">
               {/* Aquí irá el video o contenido multimedia */}
               <div className="placeholder-video">
                 <h3>📺 Área de Video</h3>
+                <p>Aquí se reproducirá el video institucional</p>
+                <small>Configurado desde el panel de administración</small>
               </div>
             </div>
           </div>
@@ -474,7 +396,7 @@ const PantallaTurnos = () => {
           <div className="modal-content">
             <h2>TURNO #{turnoLlamado.numero_turno}</h2>
             <p>{turnoLlamado.nombre}</p>
-            <p>Por favor acérquese</p>
+            <p>Por favor acérquese al mostrador</p>
           </div>
         </div>
       )}
