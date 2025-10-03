@@ -427,6 +427,10 @@ body {
   overflow-x: auto;
 }
 
+.turno-row td {
+  color: black;
+}
+
 .turno-row.esperando {
   background-color: #f8f9fa;
 }
@@ -696,6 +700,35 @@ body {
 .placeholder-video small {
   font-size: 1em;
   opacity: 0.8;
+}
+
+.video-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.video-nombre {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: white;
+  flex: 1;
+  text-align: left;
+}
+
+.video-contador {
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: 500;
 }
 
 /* Sin turnos */

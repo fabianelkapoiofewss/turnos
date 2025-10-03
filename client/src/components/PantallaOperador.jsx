@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { turnosAPI } from '../services/api'
 
 const PantallaOperador = () => {
@@ -6,6 +7,7 @@ const PantallaOperador = () => {
   const [nombreNuevo, setNombreNuevo] = useState('')
   const [loading, setLoading] = useState(false)
   const [mensaje, setMensaje] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     cargarTurnos()

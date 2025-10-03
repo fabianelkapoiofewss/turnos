@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { turnosAPI } from '../services/api'
+import { turnosAPI, videosAPI } from '../services/api'
 
 const PantallaTurnos = () => {
   const [turnos, setTurnos] = useState([])
@@ -9,7 +9,10 @@ const PantallaTurnos = () => {
   const [voces, setVoces] = useState([])
   const [vozSeleccionada, setVozSeleccionada] = useState('')
   const [mostrarSelector, setMostrarSelector] = useState(false)
+  const [videos, setVideos] = useState([])
+  const [videoActual, setVideoActual] = useState(0)
   const turnosAnteriorRef = useRef([])
+  const videoRef = useRef(null)
 
   // Función para reproducir sonido personalizado de turno
   const reproducirPitidoTurno = (callback) => {
@@ -147,6 +150,23 @@ const PantallaTurnos = () => {
       setFechaHora(new Date())
     }, 1000)
     return () => clearInterval(interval)
+  }, [])
+
+  // Cargar videos al iniciar
+  useEffect(() => {
+    const cargarVideos = async () => {
+      try {
+        const response = await videosAPI.obtenerVideos()
+        if (response.data && Array.isArray(response.data)) {
+          setVideos(response.data)
+          console.log('🎥 Videos cargados:', response.data.length)
+        }
+      } catch (error) {
+        console.error('Error al cargar videos:', error)
+      }
+    }
+    
+    cargarVideos()
   }, [])
 
   // Cargar turnos cada 15 segundos
@@ -355,6 +375,21 @@ const PantallaTurnos = () => {
     console.log(`💾 localStorage actual:`, localStorage.getItem('turnos-voz-preferida'))
   }, [vozSeleccionada])
 
+  // Gestión de reproducción de videos
+  const manejarFinVideo = () => {
+    if (videos.length > 0) {
+      setVideoActual((prev) => (prev + 1) % videos.length)
+    }
+  }
+
+  const manejarErrorVideo = (error) => {
+    console.error('Error al reproducir video:', error)
+    // Intentar con el siguiente video
+    if (videos.length > 1) {
+      setVideoActual((prev) => (prev + 1) % videos.length)
+    }
+  }
+
   const formatearFecha = (fecha) => {
     return fecha.toLocaleDateString('es-ES', {
       weekday: 'long',
@@ -379,7 +414,7 @@ const PantallaTurnos = () => {
   }
 
   // Filtrar turnos que no estén atendidos y mostrar máximo 8
-  const turnosMostrar = turnos.filter(turno => turno.estado !== 'atendido').slice(0, 8)
+  const turnosMostrar = turnos.filter(turno => turno.estado !== 'atendido').slice(0, 4)
 
   return (
     <div className="pantalla-turnos-nueva">
@@ -418,15 +453,42 @@ const PantallaTurnos = () => {
         {/* Panel derecho - Contenido multimedia */}
         <div className="panel-multimedia">
           <div className="contenedor-video">
-            {/* <div className="texto-video">
-              VIDEO INSTITUCIONAL CARGADO DESDE UN SUPER ADMIN
-            </div> */}
             <div className="area-video">
-              {/* Aquí irá el video o contenido multimedia */}
-              <div className="placeholder-video">
-                <h3>📺 Área de Video</h3>
-              </div>
+              {videos.length > 0 ? (
+                <video
+                  ref={videoRef}
+                  key={videos[videoActual]?.archivo}
+                  src={videosAPI.obtenerUrlVideo(videos[videoActual]?.archivo)}
+                  autoPlay
+                  muted
+                  onEnded={manejarFinVideo}
+                  onError={manejarErrorVideo}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '10px'
+                  }}
+                >
+                  Su navegador no soporta videos HTML5.
+                </video>
+              ) : (
+                <div className="placeholder-video">
+                  <h3>📺 Área de Video</h3>
+                </div>
+              )}
             </div>
+            
+            {videos.length > 0 && (
+              <div className="video-info">
+                <span className="video-nombre">
+                  {videos[videoActual]?.nombre}
+                </span>
+                <span className="video-contador">
+                  {videoActual + 1} de {videos.length}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -4,6 +4,8 @@ import helmet from "helmet";
 import cors from "cors";
 import dotenv from "dotenv";
 import TurnosRouter from "./src/routes/turnos.route.js";
+import VideosRouter from "./src/routes/videos.route.js";
+import AuthRouter from "./src/routes/auth.route.js";
 import { connectDB } from "./src/database/connection.js";
 
 dotenv.config();
@@ -44,6 +46,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/turnos", TurnosRouter);
+app.use("/api/videos", VideosRouter);
+app.use("/api/auth", AuthRouter);
 
 // Ruta de health check para Render
 app.get('/health', (req, res) => {
