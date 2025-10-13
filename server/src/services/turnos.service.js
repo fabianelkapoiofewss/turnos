@@ -81,20 +81,40 @@ export const eliminarTurno = async (id) => {
 
 export const llamarSiguienteTurno = async () => {
     try {
+        // Determinar umbral de antigüedad (horas) para ignorar turnos viejos
+        const maxWaitHours = parseInt(process.env.MAX_WAIT_HOURS, 10) || 12;
+        const fechaCorte = new Date(Date.now() - maxWaitHours * 60 * 60 * 1000);
+
+        // Buscar el próximo turno esperando que sea reciente (createdAt >= fechaCorte)
         const proximoTurno = await Turnos.findOne({
-            where: { estado: 'esperando' },
+            where: {
+                estado: 'esperando',
+                createdAt: { [Op.gte]: fechaCorte }
+            },
             order: [['createdAt', 'ASC']]
         });
-        
+
         if (!proximoTurno) {
+            // Verificar si existen turnos en espera pero más antiguos que el umbral
+            const antiguosCount = await Turnos.count({
+                where: {
+                    estado: 'esperando',
+                    createdAt: { [Op.lt]: fechaCorte }
+                }
+            });
+
+            if (antiguosCount > 0) {
+                return { message: `Hay ${antiguosCount} turnos en espera, pero son anteriores a ${maxWaitHours} horas y se han omitido` };
+            }
+
             return { message: "No hay turnos en espera" };
         }
-        
-    proximoTurno.estado = 'llamado';
-    // Guardar la hora completa en UTC; el cliente la mostrará en localtime
-    proximoTurno.hora_llamado = new Date();
+
+        proximoTurno.estado = 'llamado';
+        // Guardar la hora completa en UTC; el cliente la mostrará en localtime
+        proximoTurno.hora_llamado = new Date();
         await proximoTurno.save();
-        
+
         return proximoTurno;
     } catch (error) {
         console.error("Error al llamar el siguiente turno:", error);
