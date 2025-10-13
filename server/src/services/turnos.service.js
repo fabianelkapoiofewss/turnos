@@ -3,19 +3,12 @@ import { Op } from "sequelize";
 
 export const crearTurno = async (nombre, horaLlamado = null) => {
     try {
-        // Obtener el próximo número de turno
-        const ultimoTurno = await Turnos.findOne({
-            order: [['numero_turno', 'DESC']]
-        });
-        
-        const numeroTurno = ultimoTurno ? ultimoTurno.numero_turno + 1 : 1;
-        
-        const nuevoTurno = await Turnos.create({
-            numero_turno: numeroTurno,
-            nombre,
-            hora_llamado: horaLlamado,
-            estado: 'esperando'
-        });
+            // Crear el nuevo turno sin numero incremental (se usa createdAt)
+            const nuevoTurno = await Turnos.create({
+                nombre,
+                hora_llamado: horaLlamado,
+                estado: 'esperando'
+            });
         return nuevoTurno;
     } catch (error) {
         console.error("Error al crear el turno:", error);
@@ -37,7 +30,7 @@ export const obtenerTurnos = async () => {
                     [Op.lt]: mañana
                 }
             },
-            order: [['numero_turno', 'ASC']],
+                order: [['createdAt', 'ASC']],
             // Limitar a 20 turnos para optimizar
             limit: 20
         });
@@ -90,15 +83,16 @@ export const llamarSiguienteTurno = async () => {
     try {
         const proximoTurno = await Turnos.findOne({
             where: { estado: 'esperando' },
-            order: [['numero_turno', 'ASC']]
+            order: [['createdAt', 'ASC']]
         });
         
         if (!proximoTurno) {
             return { message: "No hay turnos en espera" };
         }
         
-        proximoTurno.estado = 'llamado';
-        proximoTurno.hora_llamado = new Date().toTimeString().slice(0, 8);
+    proximoTurno.estado = 'llamado';
+    // Guardar la hora completa en UTC; el cliente la mostrará en localtime
+    proximoTurno.hora_llamado = new Date();
         await proximoTurno.save();
         
         return proximoTurno;

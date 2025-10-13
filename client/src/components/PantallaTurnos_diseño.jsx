@@ -116,7 +116,7 @@ const PantallaTurnos = () => {
       speechSynthesis.cancel()
       
       setTimeout(() => {
-        const mensaje = `Turno número ${turno.numero_turno}. ${turno.nombre}. Por favor acérquese al mostrador.`
+        const mensaje = `${turno.nombre}. Por favor acérquese al mostrador.`
         const utterance = new SpeechSynthesisUtterance(mensaje)
         
         // ESTRATEGIA ROBUSTA: Múltiples intentos para encontrar la voz
@@ -207,7 +207,7 @@ const PantallaTurnos = () => {
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel()
       
-      const mensaje = 'Prueba de audio. Sistema de turnos funcionando correctamente. Turno número uno, Juan Pérez, por favor acérquese al mostrador.'
+      const mensaje = 'Prueba de audio. Sistema de turnos funcionando correctamente. Por favor acérquese al mostrador.'
       const utterance = new SpeechSynthesisUtterance(mensaje)
       
       // Usar la misma lógica robusta que en mostrarTurnoLlamado
@@ -322,7 +322,7 @@ const PantallaTurnos = () => {
                     {turno.nombre.toUpperCase()}
                   </div>
                   <div className="numero-turno-pequeño">
-                    #{turno.numero_turno}
+              {/* sin numero de turno */}
                   </div>
                   {turno.estado === 'llamado' && (
                     <div className="indicador-llamado">LLAMANDO</div>
@@ -394,7 +394,7 @@ const PantallaTurnos = () => {
       {turnoLlamado && (
         <div className="modal-llamado">
           <div className="modal-content">
-            <h2>TURNO #{turnoLlamado.numero_turno}</h2>
+            <h2>SIGUIENTE</h2>
             <p>{turnoLlamado.nombre}</p>
             <p>Por favor acérquese al mostrador</p>
           </div>

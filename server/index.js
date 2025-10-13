@@ -7,6 +7,7 @@ import TurnosRouter from "./src/routes/turnos.route.js";
 import VideosRouter from "./src/routes/videos.route.js";
 import AuthRouter from "./src/routes/auth.route.js";
 import { connectDB } from "./src/database/connection.js";
+import { initializeDatabase } from "./src/database/init-db.js";
 
 dotenv.config();
 
@@ -60,12 +61,29 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+// Arranque seguro: primero conectar a la base de datos, luego exponer el servidor
+const startServer = async () => {
     try {
-        connectDB();
-        console.log(`Servidor corriendo en el puerto ${PORT}`);
+        await connectDB();
+
+        // Si se configura AUTO_INIT_DB=true, inicializamos la DB de forma idempotente
+        if (process.env.AUTO_INIT_DB === 'true') {
+            try {
+                await initializeDatabase({ createDefaultAdmin: true });
+                console.log('⚙️ AUTO_INIT_DB: inicialización completada');
+            } catch (initErr) {
+                console.error('Error durante AUTO_INIT_DB:', initErr);
+                // No abortamos el arranque porque la DB ya está conectada; solo logueamos
+            }
+        }
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en el puerto ${PORT}`);
+        });
     } catch (error) {
         console.error("Error al iniciar el servidor:", error);
+        process.exit(1);
     }
-});
+};
+
+startServer();
     

@@ -8,17 +8,12 @@ export const Turnos = sequelize.define("Turnos", {
         primaryKey: true,
         autoIncrement: true
     },
-    numero_turno: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true
-    },
     nombre: {
         type: DataTypes.STRING,
         allowNull: false
     },
     hora_llamado: {
-        type: DataTypes.TIME,
+        type: DataTypes.DATE,
         allowNull: true
     },
     estado: {

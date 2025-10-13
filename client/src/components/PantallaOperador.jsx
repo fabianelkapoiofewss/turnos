@@ -108,6 +108,16 @@ const PantallaOperador = () => {
     return new Date(fecha).toLocaleString('es-ES')
   }
 
+  const formatearHoraLlamado = (hora) => {
+    if (!hora) return '-'
+    try {
+      const d = new Date(hora)
+      return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    } catch (e) {
+      return hora
+    }
+  }
+
   const turnosEspera = turnos.filter(t => t.estado === 'esperando')
   const turnosLlamados = turnos.filter(t => t.estado === 'llamado')
   const turnosAtendidos = turnos.filter(t => t.estado === 'atendido')
@@ -166,7 +176,7 @@ const PantallaOperador = () => {
                       </span>
                     </td>
                     <td>{formatearFecha(turno.createdAt)}</td>
-                    <td>{turno.hora_llamado || '-'}</td>
+                    <td>{formatearHoraLlamado(turno.hora_llamado)}</td>
                     <td>
                       <div className="acciones">
                         {turno.estado === 'llamado' && (
