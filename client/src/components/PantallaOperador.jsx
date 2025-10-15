@@ -105,7 +105,9 @@ const PantallaOperador = () => {
   }
 
   const formatearFecha = (fecha) => {
-    return new Date(fecha).toLocaleString('es-ES')
+    const date = new Date(fecha)
+    date.setHours(date.getHours() + 3)
+    return date.toLocaleString('es-ES')
   }
 
   const formatearHoraLlamado = (hora) => {
