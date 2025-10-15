@@ -69,8 +69,15 @@ export const videosAPI = {
   // Eliminar video
   eliminarVideo: (id) => api.delete(`/videos/${id}`),
   
-  // Obtener URL de streaming
-  obtenerUrlVideo: (filename) => `${BASE_URL}/videos/stream/${filename}`
+  // Obtener URL de video (ahora es la URL de Cloudinary)
+  obtenerUrlVideo: (archivo) => {
+    // Si ya es una URL completa de Cloudinary, devolverla directamente
+    if (archivo && archivo.startsWith('http')) {
+      return archivo;
+    }
+    // Fallback para compatibilidad (por si acaso)
+    return `${BASE_URL}/videos/stream/${archivo}`;
+  }
 }
 
 export const authAPI = {

@@ -15,6 +15,10 @@ export const Videos = sequelize.define("Videos", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    cloudinary_public_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     tipo_mime: {
         type: DataTypes.STRING,
         allowNull: false

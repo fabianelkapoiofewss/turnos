@@ -466,8 +466,9 @@ const PantallaTurnos = () => {
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
-                    borderRadius: '10px'
+                    objectFit: 'contain',
+                    borderRadius: '10px',
+                    backgroundColor: '#000'
                   }}
                 >
                   Su navegador no soporta videos HTML5.
@@ -479,16 +480,7 @@ const PantallaTurnos = () => {
               )}
             </div>
             
-            {videos.length > 0 && (
-              <div className="video-info">
-                <span className="video-nombre">
-                  {videos[videoActual]?.nombre}
-                </span>
-                <span className="video-contador">
-                  {videoActual + 1} de {videos.length}
-                </span>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
@@ -504,11 +496,12 @@ const PantallaTurnos = () => {
             alt="Ariel Caniza" 
             className="imagen-institucional"
             style={{
-              height: '90px',
+              height: '130px',
               width: 'auto',
               objectFit: 'contain',
               marginRight: '15px',
-              borderRadius: '5px'
+              borderRadius: '5px',
+              marginTop: '15px',
             }}
           />
           <img 
@@ -516,7 +509,7 @@ const PantallaTurnos = () => {
             alt="Municipalidad de Clorinda" 
             className="imagen-institucional"
             style={{
-              height: '90px',
+              height: '130px',
               width: 'auto',
               objectFit: 'contain',
               borderRadius: '5px'

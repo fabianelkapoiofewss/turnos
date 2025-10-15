@@ -752,13 +752,15 @@ body {
 /* Información del sistema (minimizada) */
 .info-sistema {
   background: rgba(255, 255, 255, 0.1);
-  padding: 15px 30px;
+  padding: 10px 30px;
+  height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: visible;
 }
 
 .fecha-hora-mini {
@@ -770,6 +772,8 @@ body {
 .controles-mini {
   display: flex;
   gap: 10px;
+  align-items: center;
+  height: 100%;
 }
 
 .btn-mini {
