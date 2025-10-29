@@ -30,9 +30,14 @@ export const obtenerTurnos = async () => {
                     [Op.lt]: mañana
                 }
             },
-                order: [['createdAt', 'ASC']],
-            // Limitar a 20 turnos para optimizar
-            limit: 20
+            order: [
+                // Primero los que están esperando o llamados (más importantes)
+                ['estado', 'ASC'],
+                // Dentro de cada estado, por fecha de creación
+                ['createdAt', 'ASC']
+            ],
+            // Aumentar límite para asegurar que se vean todos los pendientes
+            limit: 50
         });
 
         if (!turnos || turnos.length === 0) {
