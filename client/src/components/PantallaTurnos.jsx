@@ -21,7 +21,7 @@ const PantallaTurnos = () => {
       const audio = new Audio('/sonidos/turno-pitido.mp3') // Puedes cambiar la ruta y formato
       
       // Configurar volumen
-      audio.volume = 0.7 // 70% de volumen
+      audio.volume = 1.0 // 100% de volumen
       
       // Cuando termine el sonido, ejecutar callback
       audio.onended = () => {
@@ -454,33 +454,19 @@ const PantallaTurnos = () => {
         <div className="panel-multimedia">
           <div className="contenedor-video">
             <div className="area-video">
-              {videos.length > 0 ? (
-                <video
-                  ref={videoRef}
-                  key={videos[videoActual]?.archivo}
-                  src={videosAPI.obtenerUrlVideo(videos[videoActual]?.archivo)}
-                  autoPlay
-                  muted
-                  onEnded={manejarFinVideo}
-                  onError={manejarErrorVideo}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    borderRadius: '10px',
-                    backgroundColor: '#000'
-                  }}
-                >
-                  Su navegador no soporta videos HTML5.
-                </video>
-              ) : (
-                <div className="placeholder-video">
-                  <h3>📺 Área de Video</h3>
-                </div>
-              )}
+              <img
+                src="/image.png"
+                alt="Imagen institucional"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  width: 'auto',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  borderRadius: '10px'
+                }}
+              />
             </div>
-            
-            
           </div>
         </div>
       </div>
