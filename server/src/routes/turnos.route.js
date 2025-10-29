@@ -5,6 +5,7 @@ import {
     postTurnos,
     putTurnos,
     llamarSiguiente,
+    llamarTurnoPorId,
     checkCambios,
 } from "../controllers/turnos.controller.js";
 
@@ -16,5 +17,6 @@ TurnosRouter.post("/", postTurnos);
 TurnosRouter.put("/:id", putTurnos);
 TurnosRouter.delete("/:id", deleteTurnos);
 TurnosRouter.post("/llamar-siguiente", llamarSiguiente);
+TurnosRouter.post("/llamar/:id", llamarTurnoPorId);
 
 export default TurnosRouter;

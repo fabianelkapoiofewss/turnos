@@ -49,7 +49,10 @@ export const turnosAPI = {
   eliminarTurno: (id) => api.delete(`/turnos/${id}`),
   
   // Llamar al siguiente turno
-  llamarSiguiente: () => api.post('/turnos/llamar-siguiente')
+  llamarSiguiente: () => api.post('/turnos/llamar-siguiente'),
+  
+  // Llamar a un turno específico por ID
+  llamarTurnoPorId: (id) => api.post(`/turnos/llamar/${id}`)
 }
 
 export const videosAPI = {

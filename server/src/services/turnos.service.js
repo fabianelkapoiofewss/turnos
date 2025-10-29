@@ -127,6 +127,30 @@ export const llamarSiguienteTurno = async () => {
     }
 };
 
+// Nuevo: Llamar turno específico por ID
+export const llamarTurnoEspecifico = async (id) => {
+    try {
+        const turno = await Turnos.findByPk(id);
+        
+        if (!turno) {
+            return { message: "Turno no encontrado" };
+        }
+        
+        if (turno.estado !== 'esperando') {
+            return { message: `No se puede llamar un turno con estado: ${turno.estado}` };
+        }
+        
+        turno.estado = 'llamado';
+        turno.hora_llamado = new Date();
+        await turno.save();
+        
+        return turno;
+    } catch (error) {
+        console.error("Error al llamar turno específico:", error);
+        throw error;
+    }
+};
+
 // Nuevo endpoint para verificar cambios
 export const verificarCambios = async (ultimaActualizacion) => {
     try {

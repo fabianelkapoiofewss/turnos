@@ -4,6 +4,7 @@ import {
     eliminarTurno,
     obtenerTurnos,
     llamarSiguienteTurno,
+    llamarTurnoEspecifico,
     verificarCambios,
 } from '../services/turnos.service.js';
 
@@ -72,6 +73,19 @@ export const llamarSiguiente = async (req, res) => {
         res.status(200).json(resultado);
     } catch (error) {
         res.status(500).json({ message: "Error al llamar el siguiente turno" });
+    }
+};
+
+export const llamarTurnoPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await llamarTurnoEspecifico(id);
+        if (resultado.message) {
+            return res.status(404).json(resultado);
+        }
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ message: "Error al llamar el turno" });
     }
 };
 

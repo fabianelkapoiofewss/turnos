@@ -169,7 +169,7 @@ const PantallaTurnos = () => {
     cargarVideos()
   }, [])
 
-  // Cargar turnos cada 15 segundos
+  // Cargar turnos cada 3 segundos (antes era 15)
   useEffect(() => {
     const cargarTurnos = async () => {
       try {
@@ -198,7 +198,7 @@ const PantallaTurnos = () => {
     }
 
     cargarTurnos()
-    const interval = setInterval(cargarTurnos, 15000)
+    const interval = setInterval(cargarTurnos, 3000)
     return () => clearInterval(interval)
   }, [])
 

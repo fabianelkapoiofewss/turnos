@@ -11,8 +11,8 @@ const PantallaOperador = () => {
 
   useEffect(() => {
     cargarTurnos()
-    // Actualizar cada 20 segundos (reducido de 10)
-    const interval = setInterval(cargarTurnos, 20000)
+    // Actualizar cada 5 segundos (reducido de 20)
+    const interval = setInterval(cargarTurnos, 5000)
     return () => clearInterval(interval)
   }, [])
 
@@ -52,6 +52,23 @@ const PantallaOperador = () => {
     setLoading(true)
     try {
       const response = await turnosAPI.llamarSiguiente()
+      if (response.data.message) {
+        mostrarMensaje(response.data.message, 'warning')
+      } else {
+        cargarTurnos()
+        mostrarMensaje('Turno llamado exitosamente', 'success')
+      }
+    } catch (error) {
+      console.error('Error al llamar turno:', error)
+      mostrarMensaje('Error al llamar turno', 'error')
+    }
+    setLoading(false)
+  }
+
+  const llamarTurnoEspecifico = async (id) => {
+    setLoading(true)
+    try {
+      const response = await turnosAPI.llamarTurnoPorId(id)
       if (response.data.message) {
         mostrarMensaje(response.data.message, 'warning')
       } else {
@@ -181,6 +198,15 @@ const PantallaOperador = () => {
                     <td>{formatearHoraLlamado(turno.hora_llamado)}</td>
                     <td>
                       <div className="acciones">
+                        {turno.estado === 'esperando' && (
+                          <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => llamarTurnoEspecifico(turno.id)}
+                            disabled={loading}
+                          >
+                            Llamar
+                          </button>
+                        )}
                         {turno.estado === 'llamado' && (
                           <>
                             <button
