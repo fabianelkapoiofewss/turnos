@@ -37,7 +37,7 @@ export const obtenerTurnos = async () => {
                 ['createdAt', 'ASC']
             ],
             // Aumentar límite para asegurar que se vean todos los pendientes
-            limit: 50
+            limit: 200
         });
 
         if (!turnos || turnos.length === 0) {
