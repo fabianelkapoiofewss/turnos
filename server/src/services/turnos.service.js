@@ -1,5 +1,6 @@
 import { Turnos } from "../models/turnos.js";
 import { Op } from "sequelize";
+import { sequelize } from "../database/config.js";
 
 export const crearTurno = async (nombre, horaLlamado = null) => {
     try {
@@ -31,8 +32,17 @@ export const obtenerTurnos = async () => {
                 }
             },
             order: [
-                // Primero los que están esperando o llamados (más importantes)
-                ['estado', 'ASC'],
+                // Orden personalizado por prioridad de estado usando CASE
+                [
+                    sequelize.literal(`CASE 
+                        WHEN estado = 'llamado' THEN 1 
+                        WHEN estado = 'esperando' THEN 2 
+                        WHEN estado = 'ausente' THEN 3 
+                        WHEN estado = 'atendido' THEN 4 
+                        ELSE 5 
+                    END`),
+                    'ASC'
+                ],
                 // Dentro de cada estado, por fecha de creación
                 ['createdAt', 'ASC']
             ],
